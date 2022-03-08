@@ -42,7 +42,7 @@ public class EstadoJpaControllerTest {
         estado.setNombre("editado prueba" + System.currentTimeMillis());
 
         EstadoJpaController instance = new EstadoJpaController();
-        instance.edit(estado,2);
+        instance.edit(estado);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }

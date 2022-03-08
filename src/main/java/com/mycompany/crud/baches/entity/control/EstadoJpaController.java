@@ -72,29 +72,79 @@ public class EstadoJpaController implements Serializable {
         
     }
 
-    public void edit(Estado nuevo ,int id) throws NonexistentEntityException, Exception {
-        EntityManager em = null ;
-        
-        nuevo=em.find(Estado.class, id);
-        if(nuevo!=null){
-          
-            em.getTransaction().begin();
-            em.merge(nuevo);
-            em.getTransaction().commit();
-        }else{
-            System.out.println("no se encontro el estado ");
-        }
+    public void edit(Estado estado) throws NonexistentEntityException, Exception {
+        EntityManager em = null;
         try {
-           
-            
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Estado persistentEstado = em.find(Estado.class, estado.getIdEstado());
+            Collection<ObjetoEstado> objetoEstadoCollectionOld = persistentEstado.getObjetoEstadoCollection();
+            Collection<ObjetoEstado> objetoEstadoCollectionNew = estado.getObjetoEstadoCollection();
+            Collection<ObjetoEstado> attachedObjetoEstadoCollectionNew = new ArrayList<ObjetoEstado>();
+            for (ObjetoEstado objetoEstadoCollectionNewObjetoEstadoToAttach : objetoEstadoCollectionNew) {
+                objetoEstadoCollectionNewObjetoEstadoToAttach = em.getReference(objetoEstadoCollectionNewObjetoEstadoToAttach.getClass(), objetoEstadoCollectionNewObjetoEstadoToAttach.getIdObjetoEstado());
+                attachedObjetoEstadoCollectionNew.add(objetoEstadoCollectionNewObjetoEstadoToAttach);
+            }
+            objetoEstadoCollectionNew = attachedObjetoEstadoCollectionNew;
+            estado.setObjetoEstadoCollection(objetoEstadoCollectionNew);
+            estado = em.merge(estado);
+            for (ObjetoEstado objetoEstadoCollectionOldObjetoEstado : objetoEstadoCollectionOld) {
+                if (!objetoEstadoCollectionNew.contains(objetoEstadoCollectionOldObjetoEstado)) {
+                    objetoEstadoCollectionOldObjetoEstado.setIdEstado(null);
+                    objetoEstadoCollectionOldObjetoEstado = em.merge(objetoEstadoCollectionOldObjetoEstado);
+                }
+            }
+            for (ObjetoEstado objetoEstadoCollectionNewObjetoEstado : objetoEstadoCollectionNew) {
+                if (!objetoEstadoCollectionOld.contains(objetoEstadoCollectionNewObjetoEstado)) {
+                    Estado oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado = objetoEstadoCollectionNewObjetoEstado.getIdEstado();
+                    objetoEstadoCollectionNewObjetoEstado.setIdEstado(estado);
+                    objetoEstadoCollectionNewObjetoEstado = em.merge(objetoEstadoCollectionNewObjetoEstado);
+                    if (oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado != null && !oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado.equals(estado)) {
+                        oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado.getObjetoEstadoCollection().remove(objetoEstadoCollectionNewObjetoEstado);
+                        oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado = em.merge(oldIdEstadoOfObjetoEstadoCollectionNewObjetoEstado);
+                    }
+                }
+            }
+            em.getTransaction().commit();
         } catch (Exception ex) {
-            
+            String msg = ex.getLocalizedMessage();
+            if (msg == null || msg.length() == 0) {
+                Integer id = estado.getIdEstado();
+                if (findEstado(id) == null) {
+                    throw new NonexistentEntityException("The estado with id " + id + " no longer exists.");
+                }
+            }
             throw ex;
         } finally {
             if (em != null) {
                 em.close();
             }
         }
+        
+        
+//                EntityManager em = null ;
+//        
+//        nuevo=em.find(Estado.class, id);
+//        if(nuevo!=null){
+//          
+//            em.getTransaction().begin();
+//            em.merge(nuevo);
+//            em.getTransaction().commit();
+//        }else{
+//            System.out.println("no se encontro el estado ");
+//        }
+//        try {
+//           
+//            
+//        } catch (Exception ex) {
+//            
+//            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+//        }
+        
     }
 
     public void destroy(Integer id) throws NonexistentEntityException {
