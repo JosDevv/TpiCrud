@@ -12,10 +12,7 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author josem
- */
+
 public class EstadoJpaControllerTest {
 
     public EstadoJpaControllerTest() {
