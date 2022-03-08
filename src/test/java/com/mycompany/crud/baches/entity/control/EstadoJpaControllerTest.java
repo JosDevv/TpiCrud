@@ -36,31 +36,27 @@ public class EstadoJpaControllerTest {
     @Test
     public void testEdit() throws Exception {
         System.out.println("edit");
-        Estado estado = new Estado();
-
+        Estado estado;
+        EstadoJpaController instance = new EstadoJpaController();
+        estado=instance.findEstado(2);
         estado.setFechaCreacion(new Date());
         estado.setNombre("editado prueba" + System.currentTimeMillis());
-
-        EstadoJpaController instance = new EstadoJpaController();
         instance.edit(estado);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+
     }
 
-//    /**
-//     * Test of destroy method, of class EstadoJpaController.
-////     */
+
 //    @Test
 //    public void testDestroy() throws Exception {
 //        System.out.println("destroy");
-//        Integer id = 1;//id a eliminar
+//        Integer id = null;//id a eliminar
 //        EstadoJpaController instance = new EstadoJpaController();
 //        instance.destroy(id);
-//        // TODO review the generated test code and remove the default call to fail.
-//        //fail("The test case is a prototype.");
+//         
+//        //fail("esto falla por que el id es null para testear prueve con un id existente");
 //    }
-//
-//  
+
+  
     @Test
     public void testFindEstado() {
         System.out.println("findEstado");
@@ -71,8 +67,6 @@ public class EstadoJpaControllerTest {
         assertEquals(result.getClass(), Estado.class);
         System.out.println(result.getNombre());
 
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
     }
 
 }
